@@ -53,7 +53,7 @@ def draw_graph(bins1, bins2, S):
     plt.figtext(0, 0.001, "time m1: \ntime m2:", wrap=True)
     plt.show()
 
-def draw_graph2(bins1, bins2, S, bin=[0]):
+def draw_overlap(bins1, bins2, S, bin=[0]):
     fig1 = plt.figure()
     ax1 = fig1.add_subplot(211)
     for x in bins1.keys(): #bins
@@ -75,16 +75,6 @@ def draw_graph2(bins1, bins2, S, bin=[0]):
     plt.tight_layout()
     plt.figtext(0, 0.001, "time m1: \ntime m2:", wrap=True)
     plt.show()
-
-def get_diffs(bins1, bins2, S, bin=[0]):
-    res_dict = {}
-    for x in bins1.keys(): #bins
-        if x in ["".join(["bin", str(i)]) for i in bin]:
-            res_dict[x]=[]
-            for idx, (i, j) in enumerate(zip(bins1[x].values(), bins2[x].values())): #idx=t
-                res_dict[x].append(abs(max(i)-max(j))+abs(min(i)-min(j)))
-
-    return res_dict
 
 def draw_diffs(diffs_dict):
     fig1 = plt.figure()
