@@ -9,7 +9,7 @@ from visualizing import draw_graph, draw_overlap, draw_diffs
 
 np.random.seed(42)
 
-def simulate_paths(S0 = 100., K = 200., T = 1.0, r = 0.05, sigma = 0.2, M = 100, I = 1000):
+def simulate_paths(S0 = 100., K = 200., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I = 100):
     dt = T/M
     #I Paths with M timesteps
 
@@ -61,7 +61,7 @@ def pivot_bins(t_dict):
             b_dict[b] = {i[0]: i[1][b] for i in t_dict.items()}
     return b_dict
 
-def get_diffs(bins1, bins2, S, bin=[0]):
+def get_diffs(bins1, bins2, bin=[0]):
     res_dict = {}
     for x in bins1.keys(): #bins
         if x in ["".join(["bin", str(i)]) for i in bin]:
@@ -70,11 +70,3 @@ def get_diffs(bins1, bins2, S, bin=[0]):
                 res_dict[x].append(abs(max(i)-max(j))+abs(min(i)-min(j)))
 
     return res_dict
-
-S = simulate_paths(sigma=0.2)
-
-fs_bins = pivot_bins(binning_S(S=S, method='fixed'))
-kmeans_bins = pivot_bins(binning_S(S=S, method='kmeans'))
-draw_diffs(get_diffs(fs_bins, kmeans_bins, S[:, -4:], bin=[0,1,2,3]))
-
-draw_overlap(fs_bins, kmeans_bins, S[:, -4:], bin=[0,2])
