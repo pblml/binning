@@ -6,6 +6,10 @@ from tqdm import tqdm
 from collections import defaultdict
 from sklearn.cluster import KMeans
 from visualizing import draw_graph, draw_overlap, draw_diffs
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.colors as colors
+import random
 
 np.random.seed(42)
 
