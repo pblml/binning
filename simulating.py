@@ -6,10 +6,6 @@ from tqdm import tqdm
 from collections import defaultdict
 from sklearn.cluster import KMeans
 from visualizing import draw_graph, draw_overlap, draw_diffs
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.colors as colors
-import random
 
 np.random.seed(42)
 
@@ -26,7 +22,13 @@ def simulate_paths(S0 = 100., K = 200., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I
 
     return(S)
 
+def binning_t_fs(S_t, n=4):
+    sorted = np.sort(S_t)
+    return {f"bin{idx}": list(item) for idx, item in enumerate(list(zip_longest(*[iter(sorted)]*n, fillvalue="")))}
 
+def binning_t_kmeans(S_t, n=4):
+    #bin{idx}: [1,2,3,...]
+    
     res = defaultdict(list)
     try:
         kmeans = KMeans(n_clusters=n, init='k-means++', random_state=0).fit(S_t.reshape(-1,1))
