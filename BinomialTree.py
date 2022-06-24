@@ -84,12 +84,14 @@ class Tree():
         G=nx.Graph()
         for node in self.nodes:
             t = int(node[-1])
-            G.add_node(node, pos=(t, globals()[node].value))
+            G.add_node(node, pos=(t, globals()[node].value), label=globals()[node].value)
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=globals()[node].children[child])
-        nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = True)
+        nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
         nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             edge_labels=nx.get_edge_attributes(G,'label'))
+        nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
+            labels=nx.get_node_attributes(G, 'label'))
         
         plt.show()
         return
@@ -99,7 +101,6 @@ class Tree():
 
 edgelist = pd.read_csv("edgelist.csv")
 print(edgelist)
-tree = Tree(42)
+tree = Tree(strike=42)
 tree.from_edgelist("edgelist.csv")
-print(b0t1.update_expvalue(), b1t1.ev, b0t1.ev)
 tree.plot()
