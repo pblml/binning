@@ -13,7 +13,7 @@ class Node():
         self.children = {}
         self.ev = None
 
-    def update_expvalue(self, strike, discount, opt, type):
+    def get_option_value(self, strike, discount, opt, type):
         if len(self.children) > 0:
             s = discount*sum([child.ev*self.children[child] for child in self.children.keys()])
             self.ev = s
@@ -90,7 +90,7 @@ class Tree():
         while len(parent_list) != 0:
             tmp_parent_list = []
             for node in parent_list:
-                globals()[node].update_expvalue(strike, discount, opt, type)
+                globals()[node].get_option_value(strike, discount, opt, type)
                 tmp_parent_list.extend([i.name for i in globals()[node].parents])
             parent_list=list(set(tmp_parent_list))
         return self
@@ -99,6 +99,7 @@ class Tree():
         G=nx.Graph()
         
         for node in self.nodes:
+            # TODO: Remove naming based period retrieval
             t = int(node[-1])
             G.add_node(node, pos=(t, globals()[node].value), label=f"\n{globals()[node].value}\n{globals()[node].ev or ''}")
             for child in globals()[node].children:
@@ -123,5 +124,5 @@ edgelist = pd.read_csv("edgelist.csv")
 tree = Tree()
 tree.from_edgelist("edgelist.csv")
 tree.plot()
-print(tree.calc_price(42, 0.9753, type="p"))
+print(tree.calc_price(42, 0.9753, type="c"))
 tree.plot()
