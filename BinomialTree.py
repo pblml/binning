@@ -57,7 +57,7 @@ class Tree():
             globals()[n].tree = self
             self.nodes.append(n)
         try:
-            [globals()[n].update_expvalue() for n in self.nodes]
+            print(self.nodes)
         except Exception as e:
             print(e)
             return []
@@ -77,7 +77,19 @@ class Tree():
 
         for node in all_nodes:
             self.append_node(node)
-        
+
+        return self
+
+    def get_leafs(self):
+        leafs = []
+        for node in self.nodes:
+            if len(globals()[node].children)==0:
+                leafs.append(node)
+        return leafs
+
+    def calc_price(self, opt_type="european"):
+        for node in self.get_leafs():
+            pass
         return self
 
     def plot(self):
@@ -103,4 +115,5 @@ edgelist = pd.read_csv("edgelist.csv")
 print(edgelist)
 tree = Tree(strike=42)
 tree.from_edgelist("edgelist.csv")
+print(tree.get_leafs())
 tree.plot()
