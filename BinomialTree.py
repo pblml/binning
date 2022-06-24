@@ -11,19 +11,15 @@ class Node():
         self.parents = parents
         #children dict of form {node: probability}
         self.children = {}
-        self.ev = value
+        self.ev = None
 
     def update_expvalue(self):
         strike = self.tree.strike
-        ev=self.ev
-        if len(self.children)>0:
-            print([child.ev*self.children[child] for child in self.children.keys()])
+        if len(self.children) > 0:
             s = sum([child.ev*self.children[child] for child in self.children.keys()])
-            ev = s
-        if (strike-ev) < 0:
-            self.ev=0
+            self.ev = s
         else:
-            self.ev = 0.9753*(strike - ev)
+            self.ev = max(0, self.tree.strike-self.value)
         return self
 
     def add_parent(self, *kwargs):
@@ -57,7 +53,7 @@ class Tree():
             globals()[n].tree = self
             self.nodes.append(n)
         try:
-            print(self.nodes)
+            isinstance(self.nodes, list)
         except Exception as e:
             print(e)
             return []
@@ -83,13 +79,14 @@ class Tree():
     def get_leafs(self):
         leafs = []
         for node in self.nodes:
-            if len(globals()[node].children)==0:
+            if len(globals()[node].children) == 0:
                 leafs.append(node)
         return leafs
 
     def calc_price(self, opt_type="european"):
         for node in self.get_leafs():
-            pass
+            globals()[node].update_expvalue()
+            print(globals()[node].ev)
         return self
 
     def plot(self):
@@ -116,4 +113,6 @@ print(edgelist)
 tree = Tree(strike=42)
 tree.from_edgelist("edgelist.csv")
 print(tree.get_leafs())
+print(tree.calc_price())
+print(globals()["b2t2"])
 tree.plot()
