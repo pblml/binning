@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.colors as colors
 import random
+import numpy as np
 
 def rgb_to_hex(rgb):
     return '%02x%02x%02x' % rgb
@@ -16,17 +17,17 @@ def draw_graph(bins1, bins2, S):
         g = random.random()
         color = (r, g, b)
         for idx, i in enumerate(bins1[x].values()):
-            # ax1.add_patch(
-            #         patches.Rectangle((idx-0.5, min(i)), 1, max(i)-min(i), color=color, alpha=.5)
-            #         )
-            ax1.violinplot(i, positions=[idx])
+            ax1.add_patch(
+                    patches.Rectangle((idx-0.5, min(i)), 1, max(i)-min(i), color=color, alpha=.5)
+                    )
+            # ax1.violinplot(i, positions=[idx])
 
-    ax1.plot(S, alpha=.5, color="black")
+    ax1.plot(S, alpha=.05, color="black")
     ax1.grid(True)
     ax1.set_ylim((0,200))
-    ax1.set_xlim((0, 102))
+    ax1.set_xlim((0, len(bins1[list(bins1.keys())[0]].keys())))
     ax1.set_xlabel("timesteps")
-    ax1.set_ylabel("index lvl")
+    ax1.set_ylabel("Index Value")
 
     if bins2:
         ax2 = fig1.add_subplot(212)
@@ -36,17 +37,17 @@ def draw_graph(bins1, bins2, S):
             g = random.random()
             color = (r, g, b)
             for idx, i in enumerate(bins2[x].values()):
-                # ax2.add_patch(
-                #         patches.Rectangle((idx-0.5, min(i)), 1, max(i)-min(i), color=color, alpha=.5)
-                #         )
-                ax2.violinplot(i, positions=[idx])
+                ax2.add_patch(
+                        patches.Rectangle((idx-0.5, min(i)), 1, max(i)-min(i), color=color, alpha=.5)
+                        )
+                # ax2.violinplot(i, positions=[idx])
 
-        ax2.plot(S, alpha=.5, color="black")
+        ax2.plot(S, alpha=.05, color="black")
         ax2.grid(True)
-        ax2.set_ylim((0,200))
-        ax2.set_xlim((0, 102))
-        ax2.set_xlabel("timesteps")
-        ax2.set_ylabel("index lvl")
+        ax2.set_ylim((0, 200))
+        ax2.set_xlim((0, len(bins2[list(bins2.keys())[0]].keys())))
+        ax2.set_xlabel("Timestep")
+        ax2.set_ylabel("Index Value")
 
     plt.tight_layout()
     #plt.figtext(0, 0.001, "time m1: \ntime m2:", wrap=True)
@@ -67,10 +68,10 @@ def draw_overlap(bins1, bins2, S=None, bin=[0], label= ["bins1", "bins2"], title
     if S is not None:
         ax1.plot(S, alpha=.5, color="black")
     ax1.grid(True)
-    ax1.set_ylim((0,200))
-    ax1.set_xlim((0, 102))
-    ax1.set_xlabel("timesteps")
-    ax1.set_ylabel("index lvl")
+    ax1.set_ylim((0, 200))
+    ax1.set_xlim((0, len(bins1[list(bins1.keys())[0]].keys())))
+    ax1.set_xlabel("Timestep")
+    ax1.set_ylabel("Index Value")
     fig1.legend(loc=7)
     plt.title(title)
     plt.tight_layout()
