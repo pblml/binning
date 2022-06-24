@@ -16,7 +16,7 @@ class Node():
     def update_expvalue(self):
         strike = self.tree.strike
         if len(self.children) > 0:
-            s = sum([child.ev*self.children[child] for child in self.children.keys()])
+            s = 0.9753*sum([child.ev*self.children[child] for child in self.children.keys()])
             self.ev = s
         else:
             self.ev = max(0, self.tree.strike-self.value)
@@ -26,7 +26,7 @@ class Node():
         for parent, prob in kwargs:
             self.parents=list(self.parents)
             self.parents.append(parent)
-            self.parents = set(self.parents)
+            self.parents = list(set(self.parents))
             parent.children[self] = prob
         return self
 
@@ -46,7 +46,7 @@ class Tree():
 
     def __init__(self, strike, nodes=[]):
         self.strike = strike
-        self.nodes=self.append_node()
+        self.nodes = self.append_node()
 
     def append_node(self, *kwargs):
         for n in kwargs:
@@ -84,25 +84,35 @@ class Tree():
         return leafs
 
     def calc_price(self, opt_type="european"):
-        for node in self.get_leafs():
-            globals()[node].update_expvalue()
-            print(globals()[node].ev)
+        parent_list = self.get_leafs()
+
+        while len(parent_list) != 0:
+            tmp_parent_list = []
+            for node in parent_list:
+                globals()[node].update_expvalue()
+                tmp_parent_list.extend([i.name for i in globals()[node].parents])
+            parent_list=list(set(tmp_parent_list))
         return self
 
     def plot(self):
         G=nx.Graph()
+        
         for node in self.nodes:
             t = int(node[-1])
             G.add_node(node, pos=(t, globals()[node].value), label=globals()[node].value)
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=globals()[node].children[child])
+        
         nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
+        
         nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             edge_labels=nx.get_edge_attributes(G,'label'))
+        
         nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             labels=nx.get_node_attributes(G, 'label'))
         
         plt.show()
+        
         return
 
     def __str__(self):
@@ -114,5 +124,5 @@ tree = Tree(strike=42)
 tree.from_edgelist("edgelist.csv")
 print(tree.get_leafs())
 print(tree.calc_price())
-print(globals()["b2t2"])
+print(globals()["b0t0"])
 tree.plot()
