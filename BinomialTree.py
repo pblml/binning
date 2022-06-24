@@ -13,13 +13,15 @@ class Node():
         self.children = {}
         self.ev = None
 
-    def update_expvalue(self):
-        strike = self.tree.strike
+    def update_expvalue(self, strike, discount, opt, type):
         if len(self.children) > 0:
-            s = 0.9753*sum([child.ev*self.children[child] for child in self.children.keys()])
+            s = discount*sum([child.ev*self.children[child] for child in self.children.keys()])
             self.ev = s
         else:
-            self.ev = max(0, self.tree.strike-self.value)
+            if type in ["p", "put"]:
+                self.ev = max(0, strike-self.value)
+            elif type in ["c", "call"]:
+                self.ev = max(0, self.value-strike)
         return self
 
     def add_parent(self, *kwargs):
@@ -44,8 +46,7 @@ class Node():
         
 class Tree():
 
-    def __init__(self, strike, nodes=[]):
-        self.strike = strike
+    def __init__(self, nodes=[]):
         self.nodes = self.append_node()
 
     def append_node(self, *kwargs):
@@ -83,13 +84,13 @@ class Tree():
                 leafs.append(node)
         return leafs
 
-    def calc_price(self, opt_type="european"):
+    def calc_price(self, strike, discount, type, opt="european"):
         parent_list = self.get_leafs()
 
         while len(parent_list) != 0:
             tmp_parent_list = []
             for node in parent_list:
-                globals()[node].update_expvalue()
+                globals()[node].update_expvalue(strike, discount, opt, type)
                 tmp_parent_list.extend([i.name for i in globals()[node].parents])
             parent_list=list(set(tmp_parent_list))
         return self
@@ -120,9 +121,9 @@ class Tree():
 
 edgelist = pd.read_csv("edgelist.csv")
 print(edgelist)
-tree = Tree(strike=42)
+tree = Tree()
 tree.from_edgelist("edgelist.csv")
 print(tree.get_leafs())
-print(tree.calc_price())
+print(tree.calc_price(42, 0.9753, type="p"))
 print(globals()["b0t0"])
 tree.plot()
