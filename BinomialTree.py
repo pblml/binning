@@ -19,9 +19,9 @@ class Node():
             self.ev = s
         else:
             if type in ["p", "put"]:
-                self.ev = max(0, strike-self.value)
+                self.ev = max(0.0, strike-self.value)
             elif type in ["c", "call"]:
-                self.ev = max(0, self.value-strike)
+                self.ev = max(0.0, self.value-strike)
         return self
 
     def add_parent(self, *kwargs):
@@ -100,7 +100,7 @@ class Tree():
         
         for node in self.nodes:
             t = int(node[-1])
-            G.add_node(node, pos=(t, globals()[node].value), label=globals()[node].value)
+            G.add_node(node, pos=(t, globals()[node].value), label=f"\n{globals()[node].value}\n{globals()[node].ev or ''}")
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=globals()[node].children[child])
         
@@ -120,10 +120,8 @@ class Tree():
         return(str(self.edgelist))
 
 edgelist = pd.read_csv("edgelist.csv")
-print(edgelist)
 tree = Tree()
 tree.from_edgelist("edgelist.csv")
-print(tree.get_leafs())
+tree.plot()
 print(tree.calc_price(42, 0.9753, type="p"))
-print(globals()["b0t0"])
 tree.plot()
