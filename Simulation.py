@@ -43,6 +43,7 @@ class Simulation():
             for i in range(n):
                 res[f"bin{i}"]=res_list[i]
         except Exception as e:
+            print(e)
             for i in range(n):
                 res[f"bin{i}"]=[S_t[0]]
         return res

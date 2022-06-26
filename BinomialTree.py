@@ -144,22 +144,3 @@ class Tree():
 
     def __str__(self):
         return(str(self.edgelist))
-
-# edgelist = pd.read_csv("edgelist.csv")
-# tree = Tree()
-# tree.from_edgelist("edgelist.csv")
-# tree.plot()
-# print(tree.calc_option_value(42, 0.9753, type="p"))
-# tree.plot()
-
-mc_sim = Simulation()
-mc_sim.generate()
-mc_sim.binning(method="fixed")
-mc_sim.create_edgelist()
-
-tree= Tree()
-tree.from_S(mc_sim)
-
-tree.plot()
-print(tree.calc_option_value(90, 0.9753, type="c"))
-tree.plot()
