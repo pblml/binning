@@ -2,16 +2,19 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+from Simulation import *
+import re
 
 class Node():
 
-    def __init__(self, name, value, parents=[]):
+    def __init__(self, name, value, t=None, parents=[]):
         self.name = name
         self.value = value
+        self.t = self.set_t(t)
         self.parents = parents
         #children dict of form {node: probability}
         self.children = {}
-        self.ev = None
+        self.ev = ""
 
     def get_option_value(self, strike, discount, opt, type):
         if len(self.children) > 0:
@@ -31,6 +34,13 @@ class Node():
             self.parents = list(set(self.parents))
             parent.children[self] = prob
         return self
+
+    def set_t(self, t):
+        if re.search("t[0-9]+", str(self.name)):
+            print("hit")
+            return int(self.name[-1])
+        else:
+           return t
 
     def __hash__(self):
         return hash(str(self.name))
@@ -77,6 +87,22 @@ class Tree():
 
         return self
 
+    def from_S(self, S):
+        self.edgelist = S.edgelist
+        all_nodes = set(pd.concat([self.edgelist["parent"], self.edgelist["child"]], axis=0))
+        for idx, row in self.edgelist.iterrows():
+            globals()[row["parent"]] = Node(row["parent"], row["par_value"], row["position_p"][0])
+            globals()[row["child"]] = Node(row["child"], row["ch_value"], row["position_c"][0])
+
+        for idx, row in self.edgelist.iterrows():
+            # TODO: Get globals() out!
+            globals()[row["child"]].add_parent((globals()[row["parent"]], row["prob"]))
+
+        for node in all_nodes:
+            self.append_node(node)
+
+        return self
+
     def get_leafs(self):
         leafs = []
         for node in self.nodes:
@@ -84,7 +110,7 @@ class Tree():
                 leafs.append(node)
         return leafs
 
-    def calc_price(self, strike, discount, type, opt="european"):
+    def calc_option_value(self, strike, discount, type, opt="european"):
         parent_list = self.get_leafs()
 
         while len(parent_list) != 0:
@@ -100,8 +126,7 @@ class Tree():
         
         for node in self.nodes:
             # TODO: Remove naming based period retrieval
-            t = int(node[-1])
-            G.add_node(node, pos=(t, globals()[node].value), label=f"\n{globals()[node].value}\n{globals()[node].ev or ''}")
+            G.add_node(node, pos=(globals()[node].t, globals()[node].value), label=f"{globals()[node].value}\n{globals()[node].ev}")
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=globals()[node].children[child])
         
@@ -120,9 +145,21 @@ class Tree():
     def __str__(self):
         return(str(self.edgelist))
 
-edgelist = pd.read_csv("edgelist.csv")
-tree = Tree()
-tree.from_edgelist("edgelist.csv")
+# edgelist = pd.read_csv("edgelist.csv")
+# tree = Tree()
+# tree.from_edgelist("edgelist.csv")
+# tree.plot()
+# print(tree.calc_option_value(42, 0.9753, type="p"))
+# tree.plot()
+
+mc_sim = Simulation()
+mc_sim.generate()
+mc_sim.binning(method="fixed")
+mc_sim.create_edgelist()
+
+tree= Tree()
+tree.from_S(mc_sim)
+
 tree.plot()
-print(tree.calc_price(42, 0.9753, type="c"))
+print(tree.calc_option_value(90, 0.9753, type="c"))
 tree.plot()
