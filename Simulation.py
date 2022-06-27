@@ -6,6 +6,8 @@ from tqdm import tqdm
 import math
 from sklearn.cluster import KMeans
 
+np.random.seed(0)
+
 class Simulation():
 
     def __init__(self):

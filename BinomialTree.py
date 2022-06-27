@@ -88,6 +88,7 @@ class Tree():
         return self
 
     def from_S(self, S):
+        self.nodes = []
         self.edgelist = S.edgelist
         all_nodes = set(pd.concat([self.edgelist["parent"], self.edgelist["child"]], axis=0))
         for idx, row in self.edgelist.iterrows():
@@ -126,13 +127,13 @@ class Tree():
         
         for node in self.nodes:
             # TODO: Remove naming based period retrieval
-            G.add_node(node, pos=(globals()[node].t, globals()[node].value), label=f"{globals()[node].value}\n{globals()[node].ev}")
+            G.add_node(node, pos=(globals()[node].t, globals()[node].value), label=f"{round(globals()[node].value, 2)}\n{round(globals()[node].ev, 2)}")
             for child in globals()[node].children:
-                G.add_edge(node, child.name, label=globals()[node].children[child])
+                G.add_edge(node, child.name, label=round(globals()[node].children[child], 2))
         
         nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
         
-        nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'),
+        nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'), label_pos=0.3,
             edge_labels=nx.get_edge_attributes(G,'label'))
         
         nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
