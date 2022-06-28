@@ -19,7 +19,8 @@ class Node():
     def get_option_value(self, strike, discount, opt, type):
         if len(self.children) > 0:
             s = discount*sum([child.ev*self.children[child] for child in self.children.keys()])
-            self.ev = s
+            exercise_value = (strike-self.value) if type in ["p", "put"] else (self.value-strike)
+            self.ev = max(s, exercise_value) if opt == "american" else s
         else:
             if type in ["p", "put"]:
                 self.ev = max(0.0, strike-self.value)
@@ -71,6 +72,7 @@ class Tree():
         return self
 
     def from_edgelist(self, file):
+        self.nodes = []
         self.edgelist = pd.read_csv(file)
         all_nodes = set(pd.concat([self.edgelist["parent"], self.edgelist["child"]], axis=0))
 
@@ -126,19 +128,19 @@ class Tree():
         G=nx.Graph()
         
         for node in self.nodes:
-            # TODO: Remove naming based period retrieval
             G.add_node(node, pos=(globals()[node].t, globals()[node].value), label=f"{round(globals()[node].value, 2)}\n{round(globals()[node].ev, 2)}")
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=round(globals()[node].children[child], 2))
         
         nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
-        
         nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'), label_pos=0.3,
             edge_labels=nx.get_edge_attributes(G,'label'))
         
         nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             labels=nx.get_node_attributes(G, 'label'))
+        annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
         
+        plt.text(0, annotation_text_x, "Annotation")
         plt.show()
         
         return
