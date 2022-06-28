@@ -15,7 +15,7 @@ class Simulation():
         self.bin_data = None
         self.edgelist = None
 
-    def generate(self, S0 = 100., K = 200., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I = 100):
+    def generate(self, S0 = 100., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I = 100):
         dt = T/M
         #I Paths with M timesteps
 

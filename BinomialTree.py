@@ -38,7 +38,6 @@ class Node():
 
     def set_t(self, t):
         if re.search("t[0-9]+", str(self.name)):
-            print("hit")
             return int(self.name[-1])
         else:
            return t
@@ -138,9 +137,8 @@ class Tree():
         
         nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             labels=nx.get_node_attributes(G, 'label'))
-        annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
-        
-        plt.text(0, annotation_text_x, "Annotation")
+        #annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
+        # plt.text(0, annotation_text_x, "Annotation")
         plt.show()
         
         return
