@@ -17,6 +17,16 @@ class Node():
         self.ev = ""
 
     def get_option_value(self, strike, discount, opt, type):
+        """
+        Calculate the option value of a node
+
+        self: Node object
+        strike: Strike price of the option
+        discount factor: discount factor
+        opt: "put" or "call"
+        type: "european" or "american"
+        """
+
         if len(self.children) > 0:
             s = discount*sum([child.ev*self.children[child] for child in self.children.keys()])
             exercise_value = (strike-self.value) if type in ["p", "put"] else (self.value-strike)
@@ -29,14 +39,31 @@ class Node():
         return self
 
     def add_parent(self, *kwargs):
+        """
+        Method to add parents to a node
+        self: Node object to append to.
+        *kwargs: parent node given as a tuple of (parent_node, probability)
+        """
+
         for parent, prob in kwargs:
             self.parents=list(self.parents)
             self.parents.append(parent)
             self.parents = list(set(self.parents))
             parent.children[self] = prob
+
         return self
 
     def set_t(self, t):
+        """
+        Set the time period for a node
+
+        Sets the time period when a node gets initialized. If the Nodes `name`-attribute contains a 't[0-9]'-string
+        it is used to set the time
+
+        self: Node object
+        t: hard coded t
+        """
+
         if re.search("t[0-9]+", str(self.name)):
             return int(self.name[-1])
         else:
@@ -89,23 +116,36 @@ class Tree():
         return self
 
     def from_S(self, S):
-        self.nodes = []
-        self.edgelist = S.edgelist
+        self.nodes = [] #clear old node list
+        self.edgelist = S.edgelist # get the edgelist attribute of the Simulation object
+
+        # get a list of all nodes in S
         all_nodes = set(pd.concat([self.edgelist["parent"], self.edgelist["child"]], axis=0))
+
+        # create node for every parent and child in S.edgelist
         for idx, row in self.edgelist.iterrows():
             globals()[row["parent"]] = Node(row["parent"], row["par_value"], row["position_p"][0])
             globals()[row["child"]] = Node(row["child"], row["ch_value"], row["position_c"][0])
 
+        # add the parents to each node
         for idx, row in self.edgelist.iterrows():
             # TODO: Get globals() out!
             globals()[row["child"]].add_parent((globals()[row["parent"]], row["prob"]))
 
+        # append all nodes to the tree
         for node in all_nodes:
             self.append_node(node)
 
         return self
 
     def get_leafs(self):
+        """
+        Helper method to get the leafs of the Tree.
+        
+        Used to find the starting point of the `calc_options_value`
+
+        """
+
         leafs = []
         for node in self.nodes:
             if len(globals()[node].children) == 0:
@@ -124,6 +164,12 @@ class Tree():
         return self
 
     def plot(self):
+        """
+        Generate the plot of the Tree() object using its `nodes` attribute.
+        If `calc_option_value()` was executed on the tree, it also shows the option value for each node.
+        """
+
+        # initialize Graph object
         G=nx.Graph()
         
         for node in self.nodes:
@@ -132,13 +178,16 @@ class Tree():
                 G.add_edge(node, child.name, label=round(globals()[node].children[child], 2))
         
         nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
+
         nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'), label_pos=0.3,
             edge_labels=nx.get_edge_attributes(G,'label'))
         
         nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
             labels=nx.get_node_attributes(G, 'label'))
+
         #annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
         # plt.text(0, annotation_text_x, "Annotation")
+        
         plt.show()
         
         return
