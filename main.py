@@ -1,5 +1,5 @@
 from Simulation import *
-from BinomialTree import *
+from Tree import *
 
 # Simulation der Werte mit den Standardparametern
 

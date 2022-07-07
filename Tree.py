@@ -94,6 +94,7 @@ class Tree():
 
     def __init__(self, nodes=[]):
         self.nodes = self.append_node()
+        self.option_params = None
 
     def append_node(self, *kwargs):
         for n in kwargs:
@@ -180,7 +181,7 @@ class Tree():
         type: {"call", "put"}
         opt: {"european", "american"}
         """
-        
+        self.option_params = {"strike": strike, "discount": discount, "type": type, "opt": opt}
         #get the leafs to start calculation
         parent_list = self.get_leafs()
 
@@ -221,8 +222,9 @@ class Tree():
             labels=nx.get_node_attributes(G, 'label'))
 
         # TODO: add annotation containing information about the option calculated
-        #annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
-        # plt.text(0, annotation_text_x, "Annotation")
+        if self.option_params is not None:
+            annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
+            plt.text(0, annotation_text_x, str(self.option_params))
         
         plt.show()
         
