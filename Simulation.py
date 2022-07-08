@@ -70,9 +70,10 @@ class Simulation():
             for i in range(len(self.data)):
                 cur_t = self.bin_data[f"t{i}"]
                 for b in cur_t.keys():
-                    if min(cur_t[b]) <= self.data[i][p] <= max(cur_t[b]):
+                    tmp = [i for i in cur_t[b] if isinstance(i, float)]
+                    if min(tmp) <= self.data[i][p] <= max(tmp):
                         # Hier Statistik für Repräsentation der Bins angeben
-                        res_array[p].append(np.median(cur_t[b]))
+                        res_array[p].append(np.mean(tmp))
                         break
 
         res_array = np.array(res_array).T.tolist()

@@ -3,8 +3,8 @@ from Tree import *
 
 # Simulation der Werte mit den Standardparametern
 
-sim_kmeans=Simulation().generate().binning(method="kmeans", nbins=10).create_edgelist()
-sim_fixed=Simulation().generate().binning(method="fixed", nbins=10).create_edgelist()
+sim_kmeans=Simulation().generate().binning(method="kmeans", nbins=3).create_edgelist()
+sim_fixed=Simulation().generate().binning(method="fixed", nbins=3).create_edgelist()
 
 # Initialisieren des Baums mit den Simulationsobjekten
 tree = Tree().from_S(sim_fixed)

@@ -223,7 +223,7 @@ class Tree():
 
         # TODO: add annotation containing information about the option calculated
         if self.option_params is not None:
-            annotation_text_x = max([i for i in nx.get_node_attributes(G, 'pos')])
+            annotation_text_x = max([globals()[node].value for node in self.nodes])
             plt.text(0, annotation_text_x, str(self.option_params))
         
         plt.show()
