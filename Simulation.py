@@ -29,12 +29,41 @@ class Simulation():
         return self
     
     def split(self, a, n):
+        """
+        Split an iterable into n chunks with approximatly the same size
+
+        Parameters
+        ----------
+        a: iterable
+        n: integer
+            Number of chunks to split a into
+        
+        Returns
+        -------
+        list
+        """
         k, m = divmod(len(a), n)
-        return (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))
+        return [a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)]
 
     def binning_t_fs(self, S_t, n):
+        """
+        Binning into `n` bins with approximatly same number of elements
+
+        Parameters
+        ----------
+        S_t: np.array
+            One element/data of one timestep of self.data
+        n: integer
+            Number of bins
+
+        Returns
+        -------
+        dict
+            dict of the form
+            `bin{idx}: [1,2,3,...]`
+        """
         sorted = np.sort(S_t)
-        return {f"bin{idx}": list(item) for idx, item in enumerate(list(self.split(sorted, n)))}
+        return {f"bin{idx}": item for idx, item in enumerate(list(self.split(sorted, n)))}
 
     def binning_t_kmeans(self, S_t, n):
         #bin{idx}: [1,2,3,...]

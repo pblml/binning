@@ -20,6 +20,9 @@ class Node():
         """
         Calculate the option value of a node
 
+        Parameters
+        ----------
+        
         self: Node object
         strike: Strike price of the option
         discount factor: discount factor
@@ -167,7 +170,7 @@ class Tree():
             globals()[row["child"]] = Node(row["child"], row["ch_value"], row["position_c"][0])
 
         # add the parents to each node
-        for idx, row in self.edgelist.iterrows():
+        for _, row in self.edgelist.iterrows():
             # TODO: Get globals() out!
             globals()[row["child"]].add_parent((globals()[row["parent"]], row["prob"]))
 
@@ -241,18 +244,32 @@ class Tree():
             for child in globals()[node].children:
                 G.add_edge(node, child.name, label=round(globals()[node].children[child], 2))
         
-        nx.draw(G, pos=nx.get_node_attributes(G, 'pos'), with_labels = False)
+        # Draw graph without nodes and labels
+        nx.draw(G,
+            pos=nx.get_node_attributes(G, 'pos'),
+            with_labels=False,
+            node_size=0)
 
-        nx.draw_networkx_edge_labels(G, pos=nx.get_node_attributes(G, 'pos'), label_pos=0.3,
+        # Draw edge labels
+        nx.draw_networkx_edge_labels(G,
+            pos=nx.get_node_attributes(G, 'pos'),
+            label_pos=0.3,
             edge_labels=nx.get_edge_attributes(G,'label'))
         
-        nx.draw_networkx_labels(G, pos=nx.get_node_attributes(G, 'pos'),
+        # Draw Node labels with a bounding box
+        nx.draw_networkx_labels(G,
+            pos=nx.get_node_attributes(G, 'pos'),
+            bbox=dict(facecolor="white"),
             labels=nx.get_node_attributes(G, 'label'))
-
-        # TODO: add annotation containing information about the option calculated
+        
+        # if there theres an option calculated on the tree, draw annotation with information
+        # about the option
         if self.option_params is not None:
-            annotation_text_x = max([globals()[node].value for node in self.nodes])
-            plt.text(0, annotation_text_x, "\n".join([f"{key}: {value}" for key, value in self.option_params.items()]))
+            annotation_text_x = max([globals()[node].value for node in self.nodes])-\
+                max([globals()[node].value for node in self.nodes])*0.05
+            plt.text(0, annotation_text_x,
+                "\n".join([f"{key}: {value}" for key, value in self.option_params.items()])
+                )
         
         plt.show()
         
