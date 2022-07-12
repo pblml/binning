@@ -16,6 +16,29 @@ class Simulation():
         self.edgelist = None
 
     def generate(self, S0 = 100., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I = 100):
+        """
+        Monte Carlo simulation for generating paths
+
+        Parameters:
+        -----------
+        S0: float
+            initial price
+        T: float
+            Time to maturity in years
+        r: float
+            Risk free rate
+        sigma: float
+            volatility
+        M: int
+            Timesteps in `T`
+        I: int
+            Number of paths to generate
+        
+        Returns:
+        --------
+        np.ndarray
+            Matrix with shape `(M+1, I)`
+        """
         dt = T/M
         #I Paths with M timesteps
 
