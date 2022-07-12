@@ -28,9 +28,13 @@ class Simulation():
         self.data = S
         return self
     
+    def split(self, a, n):
+        k, m = divmod(len(a), n)
+        return (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))
+
     def binning_t_fs(self, S_t, n):
         sorted = np.sort(S_t)
-        return {f"bin{idx}": list(item) for idx, item in enumerate(list(zip_longest(*[iter(sorted)]*n, fillvalue="")))}
+        return {f"bin{idx}": list(item) for idx, item in enumerate(list(self.split(sorted, n)))}
 
     def binning_t_kmeans(self, S_t, n):
         #bin{idx}: [1,2,3,...]
@@ -58,7 +62,7 @@ class Simulation():
             if method=="kmeans":
                 res_dict[f"t{i}"] = self.binning_t_kmeans(self.data[i], n=nbins)
             elif method=="fixed":
-                res_dict[f"t{i}"] = self.binning_t_fs(self.data[i], n=_n)
+                res_dict[f"t{i}"] = self.binning_t_fs(self.data[i], n=nbins)
         self.bin_data = res_dict
         return self
 
@@ -81,6 +85,7 @@ class Simulation():
         for i in range(len(res_array)):
             try:
                 for x, y in zip(res_array[i], res_array[i+1]):
+                    
                     counter = Counter(zip(res_array[i], res_array[i+1]))
                     s=0
                     for k in counter.keys():

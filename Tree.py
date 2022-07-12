@@ -97,6 +97,14 @@ class Tree():
         self.option_params = None
 
     def append_node(self, *kwargs):
+        """
+        Append an arbitrary number of nodes to the tree.
+
+        Parameters
+        ----------
+        *kwargs: Node object
+            `Node` object to append to the tree.
+        """
         for n in kwargs:
             globals()[n].tree = self
             self.nodes.append(n)
@@ -108,6 +116,18 @@ class Tree():
         return self
 
     def from_edgelist(self, file):
+        """
+        Create a Tree from a .csv file.
+        Mostly used for testing purposes.
+
+        Parameters
+        ----------
+        file: string
+            Path to csv file. Format should match the following example:\n
+            `parent,par_value,child,ch_value,prob`\n
+            `b0t0,40,b0t1,34.72,0.4461`
+        
+        """
         self.nodes = []
         self.edgelist = pd.read_csv(file)
         all_nodes = set(pd.concat([self.edgelist["parent"], self.edgelist["child"]], axis=0))
@@ -126,7 +146,15 @@ class Tree():
         return self
 
     def from_S(self, S):
+        """
+        Create a Tree from a `Simulation` object.
 
+        Parameters
+        ----------
+        S: Simulation object
+            Simulation object on which `generate` and `binning` was executed
+
+        """
         self.nodes = [] #clear old node list
         self.edgelist = S.edgelist # get the edgelist attribute of the Simulation object
 
@@ -224,11 +252,11 @@ class Tree():
         # TODO: add annotation containing information about the option calculated
         if self.option_params is not None:
             annotation_text_x = max([globals()[node].value for node in self.nodes])
-            plt.text(0, annotation_text_x, str(self.option_params))
+            plt.text(0, annotation_text_x, "\n".join([f"{key}: {value}" for key, value in self.option_params.items()]))
         
         plt.show()
         
         return
-
+ 
     def __str__(self):
         return(str(self.edgelist))
