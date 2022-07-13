@@ -184,7 +184,7 @@ class Tree():
         """
         Helper method to get the leafs of the Tree.
         
-        Used to find the starting point of the `calc_options_value`
+        Used to find the starting point of the `calc_options_value` method.
         
         Returns
         -------
@@ -212,7 +212,7 @@ class Tree():
         type: {"call", "put"}
         opt: {"european", "american"}
         """
-        self.option_params = {"strike": strike, "discount": discount, "type": type, "opt": opt}
+        self.option_params = {"Strike Price": strike, "Discount Rate": discount, "Type": type, "Option": opt}
         #get the leafs to start calculation
         parent_list = self.get_leafs()
 
