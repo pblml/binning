@@ -5,6 +5,7 @@ from itertools import zip_longest
 from tqdm import tqdm
 import math
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 np.random.seed(0)
 
@@ -14,8 +15,8 @@ class Simulation():
         self.data = None
         self.bin_data = None
         self.edgelist = None
-
-    def generate(self, S0 = 100., T = 1.0, r = 0.05, sigma = 0.2, M = 5, I = 100):
+        
+    def generate(self, S0 = 100., T = 1.0, r = 0.05, sigma = 0.2, M = 20, I = 100):
         """
         Monte Carlo simulation for generating paths
 
@@ -47,6 +48,7 @@ class Simulation():
 
         for t in range(1, M+1):
             z = np.random.standard_normal(I)
+            # gehedgtes Portfolio
             S[t] = S[t-1] * np.exp((r-0.5*sigma**2)*dt + sigma*math.sqrt(dt)*z)
         self.data = S
         return self
@@ -165,3 +167,7 @@ class Simulation():
         self.edgelist = pd.DataFrame.from_dict(edgelist)
 
         return self
+
+    def plot(self):
+        plt.plot(self.data, alpha=0.2)
+        plt.show()
