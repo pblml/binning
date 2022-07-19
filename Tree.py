@@ -221,8 +221,10 @@ class Tree():
             tmp_parent_list = [] # initialize list for parents of currently calculating nodes
             for node in parent_list:
                 globals()[node].get_option_value(strike, discount, opt, type)
+                tmp_ev = globals()[node].ev
                 tmp_parent_list.extend([i.name for i in globals()[node].parents])
             parent_list=list(set(tmp_parent_list)) # set the previous timesteps nodes as the new parent_list
+        self.option_price = tmp_ev
         return self
 
     def plot(self):
